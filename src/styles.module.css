@@ -1,9 +1,20 @@
 /* add css module styles here (optional) */
 
-.test {
-  margin: 2em;
-  padding: 0.5em;
-  border: 2px solid #000;
-  font-size: 2em;
-  text-align: center;
+.cascadeFields {
+  padding: 2px;
+}
+
+.cascadeField {
+  margin: 2px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cascadeField label {
+  margin: 2px;
+}
+
+.error>:not(label) {
+  border: 1px solid #f00;
 }

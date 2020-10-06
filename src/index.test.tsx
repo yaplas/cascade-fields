@@ -1,7 +1,10 @@
-import { ExampleComponent } from '.'
+import { CascadeField, CascadeFields } from '.'
 
-describe('ExampleComponent', () => {
-  it('is truthy', () => {
-    expect(ExampleComponent).toBeTruthy()
+describe('Cascade Fields', () => {
+  it('CascadeField is truthy', () => {
+    expect(CascadeField).toBeTruthy()
+  })
+  it('CascadeFields is truthy', () => {
+    expect(CascadeFields).toBeTruthy()
   })
 })
