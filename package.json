@@ -4,7 +4,10 @@
   "description": "dynamics forms base on what user is selecting/entering",
   "author": "Agustin Lascialandare",
   "license": "MIT",
-  "repository": "yaplas/cascade-fields",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yaplas/cascade-fields.git"
+  },
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
   "source": "src/index.tsx",
@@ -67,5 +70,19 @@
   "dependencies": {
     "ramda": "^0.27.1",
     "react-select": "^3.1.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/yaplas/cascade-fields/issues"
+  },
+  "homepage": "https://github.com/yaplas/cascade-fields#readme",
+  "directories": {
+    "example": "example"
+  },
+  "keywords": [
+    "dynamic",
+    "forms",
+    "formik",
+    "cascade",
+    "fields"
+  ]
 }
