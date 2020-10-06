@@ -53,7 +53,8 @@ const App = () => {
     </Formik>)
 }
 ```
-> also you can use CascadeFields to setup several fields
+
+also you can use CascadeFields to setup several fields
 
 ```tsx
         <CascadeFields metadata= {{
@@ -88,6 +89,7 @@ const App = () => {
         }}
         />
 ```
+
 Base on data the user enter, submitting the form, will create an object like this:
 
 ```js
