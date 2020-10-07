@@ -116,7 +116,7 @@ Options are set to specify the cascade of each possible field value, and if the 
 
 ## Playground
 
-https://codesandbox.io/s/cascadep-fields-example-dhkri
+https://codesandbox.io/s/cascade-fields-example-dhkri
 
 
 ## License
