@@ -18,3 +18,7 @@
 .error>:not(label) {
   border: 1px solid #f00;
 }
+
+.cascadeField > input {
+  height: 35px;
+}
