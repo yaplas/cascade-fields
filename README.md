@@ -108,10 +108,20 @@ Base on data the user enter, submitting the form, will create an object like thi
 }
 ```
 
-## Notes
+## UI
 
-When a field has a cascade, the cascade fields appear nested into the field name, and the parent field actual value will be in a `value` prop at the same level of the fields in cascade. This behavior is desirable to avoid names collision between fields in cascades of different parents. If the metadata contains the `by` attribute the `value` prop will be renamed. In this example `report` field has two options, one with a cascade of just one field (`period`) and two fields in the second option (`date` and `comment`). Base on what the user select (`summary` or `detailed`) the respective cascade fields will appear in the UI. The value of the field `report` itself appear into the prop `type` because of the `by` metadata attribute. 
-Options are set to specify the cascade of each possible field value, and if the `component` prop is not set also it is used by the default component (`OptionSelector`) to show a dropdown filled with the options. Options could be an array of items with `value` or an array of strings, or an object with props from where `OptionSelector` component gets the items to show in the dropdown. When a component is provided (set in the component prop in the metadata) it is up to that component what to do with the options, but they are still used to determinate the cascade fields. In the example we see in the `send` field that a checkbox component is set (input type checkbox) so it will ignore the options but those options are still used to determinate the cascade fields, that the reason why the `email` field appear just if the user checks the checkbox but it won't appear otherwise (`email` field is in the option with `true` value). In this case the option with value as `false` is not necessary because input component ignored the options and that option does not contain cascade.
+Cascade fields appear in the UI base on what user enter in the parent field, the parent field has an `options` prop where its possible values are defined with the respective cascade of fields. The cascade of each option could be different and also there could be options with no any cascade, cascade prop is not mandatory within an option. Each field could be rendered using the default component which is the `OptionSelector` that is a dropdown filled with the options items defined. Also users can provide their own component to render the field, in that case is up to that component what to do with the options, but the options are still used to determine the cascade fields.
+Cascade fields can be defined also directly into a field (no within an option as usual), this means that the field is, in fact, a group of fields (an object), so it does not have any value.
+There is no limit in the depth of cascades definition, users can define cascade into an option of a field that comes from the cascade of another option of another parent field that comes from... and so on...
+
+## Extensibility
+
+As we said previously, users can provide their own components to render each field using the `component` prop into the field definition, also they can provide a default component passed by the `defaultComponent` prop of `CascadeFields`, that will be used instead of `OptionSelector` for all the fields with no component set. For instance let's say that you have some option items that should be available only for the admin users, so you can implement your own dropdown (maybe wrapping the `OptionSelector` which is exported by this library) to filter option items base on the user privileges.
+We already said that cascade fields could be defined directly into a field, making this field to be a group of fields, well, users can also set their own components to render this "fields group" if this component is not set (the usual case) the library will use `CascadeFields`. This is valid also into an option, so users can define their own component to render any cascade. Do not be confused with this `component` prop into the option, it has nothing to do with the option it self, it is just to render the cascade of that option, in fact, if the option does not have any cascade the `component` prop will be ignored.
+
+## Result (submitted object)
+
+When a field has cascade, the cascade fields appear nested into the field name, and the parent field actual value will be in a `value` prop at the same level of the fields in cascade. This behavior is desirable to avoid name collisions between fields in cascades of different parents. If the metadata contains the `by` attribute the `value` prop will be renamed to the value of `by`.
 
 
 ## Playground

@@ -4,30 +4,62 @@ import { Field, useFormikContext, getIn } from 'formik'
 import Select from 'react-select'
 import styles from './styles.module.css'
 
-export interface FieldsMeta {
+export type FieldsMetadata = {
   [key: string]: FieldDef
 }
 
-export interface FieldDef {
-  label?: string | React.ReactNode
-  by?: string
-  options?: Options
-  component?: string | React.ComponentType
-  defaultComponent?: string | React.ComponentType
-  validate?: (value: any) => undefined | string | Promise<any>
-  cascade?: FieldsMeta
-  props?: { [key: string]: any }
+export type FieldExtraProps = {
   [key: string]: any
 }
 
+export type FieldDef = {
+  label?: string | React.ReactNode
+  by?: string
+  component?:
+    | string
+    | React.ComponentType
+    | React.ComponentType<CascadeFieldsProps>
+  cascade?: FieldsMetadata
+  options?: Options
+  defaultComponent?: React.ComponentType
+  validate?: (value: any) => undefined | string | Promise<any>
+  props?: FieldExtraProps
+} & FieldExtraProps
+
+export interface CascadeFieldProps extends FieldDef {
+  name: string
+}
+
+export interface CascadeFieldsProps {
+  name?: string
+  defaultComponent?: React.ComponentType
+  metadata: FieldsMetadata
+}
+
 export type Options =
-  | { [key: string]: { value?: any; label?: string; cascade?: FieldsMeta } }
-  | (string | { value: any; label?: string; cascade?: FieldsMeta })[]
+  | {
+      [key: string]: {
+        value?: any
+        label?: string
+        component?: React.ComponentType<CascadeFieldsProps>
+        cascade?: FieldsMetadata
+      }
+    }
+  | (
+      | string
+      | {
+          value: any
+          label?: string
+          component?: React.ComponentType<CascadeFieldsProps>
+          cascade?: FieldsMetadata
+        }
+    )[]
 
 export type OptionArrayItem = {
   value: any
   label: string
-  cascade?: FieldsMeta
+  component?: React.ComponentType<CascadeFieldsProps>
+  cascade?: FieldsMetadata
 }
 
 export type OptionArray = OptionArrayItem[]
@@ -36,12 +68,8 @@ export const CascadeFields = ({
   metadata,
   defaultComponent,
   name
-}: {
-  name?: string
-  defaultComponent?: string | React.ComponentType
-  metadata: FieldsMeta
-}) => (
-  <div className={`${styles.cascadeFields} cascade-fields`}>
+}: CascadeFieldsProps) => (
+  <div className={styles.cascadeFields}>
     {toPairs(metadata).map(([fieldName, fieldDef]: [string, FieldDef]) => (
       <CascadeField
         key={fieldName}
@@ -64,7 +92,7 @@ export const CascadeField = ({
   cascade,
   props,
   ...rest
-}: FieldDef & { name: string }) => {
+}: CascadeFieldProps) => {
   const formik = useFormikContext()
   const optionArr = optionArray(options || [])
   const anyCascade = optionArr.length
@@ -89,8 +117,7 @@ export const CascadeField = ({
       <div
         className={[
           styles.cascadeField,
-          currentError ? styles.error : undefined,
-          'cascade-field'
+          currentError ? styles.error : undefined
         ]
           .filter(identity)
           .join(' ')}
@@ -102,7 +129,7 @@ export const CascadeField = ({
             label
           )
         ) : undefined}
-        {cascade === undefined && (
+        {cascade === undefined ? (
           <Field
             id={fieldName}
             name={fieldName}
@@ -118,27 +145,44 @@ export const CascadeField = ({
             }}
             validate={validate || validations.require}
           />
+        ) : (
+          // when cascade is defined directly into the field, this means the field is a fields group
+          <RenderCascade
+            name={name}
+            defaultComponent={defaultComponent}
+            metadata={cascade}
+            component={component as React.ComponentType<CascadeFieldsProps>}
+          />
         )}
-        {
-          // when cascade prop is set directly in the field metadata (no into an option as usual)
-          // means the field has no value, it is a group of fields
-          cascade && (
-            <CascadeFields
-              name={name}
-              defaultComponent={defaultComponent}
-              metadata={cascade}
-            />
-          )
-        }
       </div>
       {currentOption && currentOption.cascade && (
-        <CascadeFields
+        // if the current selected option has cascade then render it
+        <RenderCascade
           name={name}
           defaultComponent={defaultComponent}
           metadata={currentOption.cascade}
+          component={currentOption.component}
         />
       )}
     </React.Fragment>
+  )
+}
+
+const RenderCascade = ({
+  name,
+  defaultComponent,
+  metadata,
+  component
+}: CascadeFieldsProps & {
+  component?: React.ComponentType<CascadeFieldsProps>
+}) => {
+  const Component = component || CascadeFields
+  return (
+    <Component
+      name={name}
+      defaultComponent={defaultComponent}
+      metadata={metadata}
+    />
   )
 }
 
