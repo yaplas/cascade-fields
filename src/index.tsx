@@ -4,25 +4,45 @@ import { Field, useFormikContext, getIn } from 'formik'
 import Select from 'react-select'
 import styles from './styles.module.css'
 
+// metadata is just a bunch of field definitions
+// name of the prop (key) is the name of the field
 export type FieldsMetadata = {
   [key: string]: FieldDef
 }
 
+// extra props are passed down to the field component
 export type FieldExtraProps = {
   [key: string]: any
 }
 
 export type FieldDef = {
+  // if label is set it will be rendered right before the field component
   label?: string | React.ReactNode
+  // by is used to rename 'value' prop of parent fields (fields that have options with cascade)
   by?: string
+  // component to render the field, it will be passed to the formik <Field /> component
+  // in case cascade prop is defined directly into the field definition, the component provided
+  // will be used to render the cascade (a cascade contains basically a bunch of field definitions)
   component?:
     | string
     | React.ComponentType
     | React.ComponentType<CascadeFieldsProps>
+  // if cascade is defined the field is not actually a field but a group of fields (an object)
+  // cascade prop contains a bunch of field definitions
   cascade?: FieldsMetadata
+  // options prop contains define the different values the field could be valued, and the cascade
+  // associated with that value
   options?: Options
+  // default component is used when a definition of a field does not have a component prop set
+  // if this prop is not set the <OptionSelector /> component will be use
   defaultComponent?: React.ComponentType
+  // validate function is the field validation, by default all the field has the 'required' validation
+  // which is exported by this library as validations.required
   validate?: (value: any) => undefined | string | Promise<any>
+  // extra props will be passed to the field component,
+  // this props could be set directly into the field definition
+  // but in case there is a name collision with one of FieldDef prop,
+  // it is possible to use this `props` object to passe them through
   props?: FieldExtraProps
 } & FieldExtraProps
 
@@ -31,12 +51,22 @@ export interface CascadeFieldProps extends FieldDef {
 }
 
 export interface CascadeFieldsProps {
+  // name prop is used to make all the field will be inserted under this object name
+  // name prop support dot notation (level1.level2.level3 ...) to insert the fields into any depth
   name?: string
+  // default component is used instead of <OptionSelector /> to render fields that has not 'component' prop set
   defaultComponent?: React.ComponentType
+  // metadata is a bunch of field definitions
   metadata: FieldsMetadata
 }
 
+// options are used to define the cascade of field triggered by each possible parent field value,
+// also they are used by the default <OptionSelector /> field component to fill the rendered dropdown
 export type Options =
+  // options could be an object where each prop is an option item
+  // it is possible to se the value and the label of the option
+  // but both are not mandatory, if value is not provided the prop name will be used
+  // if label is not provided, the value or the prop name will be used
   | {
       [key: string]: {
         value?: any
@@ -45,6 +75,9 @@ export type Options =
         cascade?: FieldsMetadata
       }
     }
+  // options could also be an array of strings or objects,
+  // if the item is an string that value will be used as value and label,
+  // if the item is an object then value is mandatory, but not label
   | (
       | string
       | {
@@ -55,6 +88,7 @@ export type Options =
         }
     )[]
 
+// option array item is the way the component set into the field receive the option items
 export type OptionArrayItem = {
   value: any
   label: string
