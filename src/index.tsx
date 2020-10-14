@@ -234,7 +234,12 @@ export const OptionSelector = ({
   return (
     <Select
       options={options}
-      onChange={({ value }: { value: any }) => setFieldValue(name, value)}
+      onChange={(option) =>
+        setFieldValue(
+          name,
+          option && 'value' in option ? option.value : undefined
+        )
+      }
       value={selectedOption}
     />
   )
